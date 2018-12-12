@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import axios from 'axios';
-
 import './css/App.css';
+import TodosStore from './store/store';
 import TodoForm from './components/TodoForm.js';
 import Todo from './components/Todo.js';
 
@@ -9,49 +8,17 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            todos: []
+            todos: TodosStore.getNewTodos()
         };
-        this.handleStatusChange = this.handleStatusChange.bind(this);
-        this.handleDelete = this.handleDelete.bind(this);
-        this.handleAdd = this.handleAdd.bind(this);
-        this.handleUpdate = this.handleUpdate.bind(this);
     }
 
     componentDidMount() {
-        axios.get('http://localhost:3000/api/todos')
-            .then(response => response.data)
-            .then(todos => this.setState({ todos }))
-            .catch(error => console.error(error.message));
+        TodosStore.on("storeUpdated", this.updateTodo);
     }
 
-    handleStatusChange(id) {
-        axios.patch('http://localhost:3000/api/todos', {id})
-            .then(response =>  response.data)
-            .then(todos => this.setState({ todos }))
-            .catch(error => console.error(error.message));
-    }
-
-    handleDelete(id) {
-        axios.delete('http://localhost:3000/api/todos', {data: { id: id }})
-            .then(response =>  response.data)
-            .then(todos => this.setState({ todos }))
-            .catch(error => console.error(error.message));
-    }
-
-    handleAdd(title) {
-        if (title) {
-            axios.post('http://localhost:3000/api/todos', {title})
-                .then(response =>  response.data)
-                .then(todos => this.setState({ todos }))
-                .catch(error => console.error(error.message));        }
-    }
-
-    handleUpdate(title, id) {
-        axios.put('http://localhost:3000/api/todos', {id, title})
-            .then(response =>  response.data)
-            .then(todos => this.setState({ todos }))
-            .catch(error => console.error(error.message));
-    }
+    updateTodo = () => {
+        this.setState({todos: TodosStore.getNewTodos()});
+    };
 
     render() {
         return (
@@ -68,13 +35,10 @@ class App extends Component {
                                     id={todo.id}
                                     todoTitle={todo.title}
                                     completed={todo.completed}
-                                    onStatusChange={this.handleStatusChange}
-                                    onDelete={this.handleDelete}
-                                    onUpdate={this.handleUpdate}
                                 />
                     })}
                 </div>
-                <TodoForm onAdd={this.handleAdd}/>
+                <TodoForm/>
             </div>
         );
     }

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import PropTypes from "prop-types";
+import * as TodoActions from "../actions/action";
 
 class TodoForm extends Component {
     constructor(props) {
@@ -7,18 +7,16 @@ class TodoForm extends Component {
         this.state = {
             todoTitle: ""
         };
-        this.onChangeState = this.onChangeState.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    onChangeState(event) {
+    onChangeState = (event) => {
         this.setState({todoTitle: event.target.value});
-    }
+    };
 
-    handleSubmit() {
+    handleSubmit = () => {
         this.setState({ todoTitle: "" });
-        return this.props.onAdd(this.state.todoTitle);
-    }
+        TodoActions.addTodo(this.state.todoTitle);
+    };
 
     render() {
         return (
@@ -30,9 +28,5 @@ class TodoForm extends Component {
         );
     }
 }
-
-TodoForm.propTypes = {
-    onAdd: PropTypes.func.isRequired
-};
 
 export default TodoForm;
